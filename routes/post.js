@@ -85,8 +85,10 @@ router.post("/comment",async (req, res)=>{
 
     try {
         const savedComment=await newComment.save();
+        const post = await Post.findById(req.body.postID)
+        await post.updateOne({$push:{comments:savedComment._id}})
         res.status(201).json(savedComment)
-
+        
     }
      catch (error) {
         res.status(500).json(error)
@@ -94,6 +96,32 @@ router.post("/comment",async (req, res)=>{
     
 })
 
+// get comments
+
+router.get("/comment/:postId",async(req,res)=>{
+    const com=await Comment.find({postID:req.params.postId})
+    res.status(200).json(com)
+
+
+
+})
+
+// get all the post of user
+
+router.get("/allpost/:id", async(req,res)=>{
+
+  try {
+       const posts= await  Post. find({userId:req.params.id})
+       res.status(200).json(posts)
+
+  } catch (error) {
+    
+    res.status(500).json(error)
+  }
+
+
+
+})
 
 
 

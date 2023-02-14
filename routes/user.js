@@ -9,7 +9,10 @@ router.put('/:id',async(req,res)=>{
                const user= await User.findByIdAndUpdate(req.params.id,{
                 $set:req.body,
                })
-               res.status(200).json("Account Updated")
+
+               const newUser = await User.findById(req.params.id)
+
+               res.status(200).json(newUser)
 
 
            } catch (error) {
@@ -86,9 +89,9 @@ router.get("/:id",async (req,res)=>{
             const Currentuser= await User.findById(req.body.userId)
 
             if(!Currentuser.following.includes(req.params.id)){
-                await user.updateOne({$push:{followers:req.body.userId}})
+                const followedUser=await user.updateOne({$push:{followers:req.body.userId}})
                 await Currentuser.updateOne({$push:{following:req.params.id}})
-                res.status(202).json("you follow the user")
+                res.status(202).json(followedUser)
             }
             else{
                 res.status(403).json("You already follow the user")
@@ -142,6 +145,44 @@ router.get("/:id",async (req,res)=>{
 
 
 })
+
+
+
+//get all unfollwed user
+router.get("/:id/unfollowedUser",async (req,res)=>{
+  try {
+     const user= await User.findOne({_id:req.params.id});
+    
+    if(!user)
+    res.status(404).json("Use not found")
+   else{
+
+
+      const UserList= await User.find({
+         $or:[{followers:{  $elemMatch: { $ne:req.params.id} } },
+          {followers:{  $exists:true,$eq:[] } }
+        
+        ]
+      })
+
+      const newList= UserList.filter((e)=> e.username !== user.username)
+
+
+    res.status(200).json(newList);
+  }} catch (error) {
+    console.log(error);
+  }
+   
+   
+
+
+
+})
+
+
+
+
+
 
 
 
