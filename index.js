@@ -58,7 +58,7 @@ const server= app.listen(process.env.PORT || 5000,(req,res)=>{
 const socket=require("socket.io")
 const io = socket(server, {
    cors: {
-     origin: "https://social2-frontend.vercel.app",
+     origin: "http://localhost:3000",
      credentials: true,
    },
  });
