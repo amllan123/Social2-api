@@ -151,25 +151,21 @@ router.get("/:id",async (req,res)=>{
 //get all unfollwed user
 router.get("/:id/unfollowedUser",async (req,res)=>{
   try {
-     const user= await User.findOne({_id:req.params.id});
-    
-    if(!user)
-    res.status(404).json("Use not found")
-   else{
+const user=await User.findById(req.params.id)
+const list= await User.find();
+
+const unfollowedUserList= list.filter((e)=> !e.followers.includes(req.params.id))
+const newunfollowedUserList= unfollowedUserList.filter((e)=> e.username !== user.username)
 
 
-      const UserList= await User.find({
-         $or:[{followers:{  $elemMatch: { $ne:req.params.id} } },
-          {followers:{  $exists:true,$eq:[] } }
-        
-        ]
-      })
-
-      const newList= UserList.filter((e)=> e.username !== user.username)
 
 
-    res.status(200).json(newList);
-  }} catch (error) {
+
+
+res.status(200).json(newunfollowedUserList)
+
+
+} catch (error) {
     console.log(error);
   }
    
